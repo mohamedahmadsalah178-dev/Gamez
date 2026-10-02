@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101426">
+<title>GameZone PRO</title>
+<style>
+*{box-sizing:border-box}
+:root{--bg:#080b14;--panel:#111729;--panel2:#171e32;--text:#f5f7ff;--muted:#aab3ca;--primary:#7c5cff;--secondary:#00d9ff;--good:#36e58d;--danger:#ff5577;--line:#28324c;--shadow:0 18px 50px #0007}
+body{margin:0;background:radial-gradient(circle at 20% 0%,#1b1640 0,#080b14 38%,#060810 100%);color:var(--text);font-family:Arial,Tahoma,sans-serif;min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+a{color:inherit}
+.app{max-width:1250px;margin:auto;padding:16px}
+header{position:sticky;top:10px;z-index:20;background:#0d1220eF;border:1px solid var(--line);backdrop-filter:blur(16px);border-radius:22px;padding:12px;box-shadow:var(--shadow)}
+.top{display:flex;gap:12px;align-items:center;justify-content:space-between}
+.logo{font-weight:900;font-size:23px;white-space:nowrap}.logo span{color:var(--secondary)}
+.userMini{display:flex;align-items:center;gap:8px;background:var(--panel);padding:7px 10px;border-radius:14px}
+.avatar{font-size:25px}.coins{color:#ffd65a;font-weight:800}
+nav{display:flex;gap:7px;overflow:auto;padding-top:10px}
+nav button{background:#171d30;color:#cbd2e6;padding:10px 13px;border-radius:12px;white-space:nowrap}
+nav button.active,nav button:hover{background:linear-gradient(135deg,var(--primary),#4c83ff);color:#fff}
+.page{display:none;padding:22px 0}.page.active{display:block}
+.hero{background:linear-gradient(135deg,#17163b,#111d36 55%,#13273b);border:1px solid #35436a;border-radius:28px;padding:30px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;background:#7c5cff33;left:-60px;top:-80px;filter:blur(10px)}
+.hero h1{font-size:clamp(30px,6vw,58px);margin:0 0 10px}.hero p{color:var(--muted);max-width:700px;line-height:1.8}
+.btn{background:linear-gradient(135deg,var(--primary),#4e83ff);color:white;padding:11px 16px;border-radius:13px;font-weight:800;margin:4px}
+.btn.alt{background:#1c2740}.btn.good{background:#168b5b}.btn.danger{background:#9e2846}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:16px}
+.card{background:linear-gradient(145deg,#12182a,#0e1423);border:1px solid var(--line);border-radius:19px;padding:18px;box-shadow:0 8px 25px #0003}
+.card h3{margin:8px 0}.muted{color:var(--muted)}
+.stat{font-size:28px;font-weight:900}.sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 10px}
+.search{width:100%;background:#0e1423;border:1px solid var(--line);color:#fff;border-radius:14px;padding:13px;outline:0}
+.gameCard{min-height:175px;display:flex;flex-direction:column;justify-content:space-between}
+.gameIcon{font-size:42px}.tag{display:inline-block;background:#242d48;color:#bfcaff;padding:5px 8px;border-radius:9px;font-size:12px}
+.decorText{font-size:20px;font-weight:800;word-break:break-word;margin:12px 0}
+.itemActions{display:flex;flex-wrap:wrap;gap:5px}
+.progress{height:10px;background:#252d42;border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--secondary),var(--primary));border-radius:99px}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right}th{color:#aeb9d3}
+.modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.show{display:flex}
+.modalBox{background:#11182a;border:1px solid #34405e;border-radius:22px;padding:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto}
+.close{float:left;background:#29334d;color:#fff;border-radius:10px;padding:7px 10px}
+.gamePanel{margin-top:16px;background:#0d1322;border:1px solid var(--line);border-radius:20px;padding:20px}
+.bigNum{font-size:60px;text-align:center;font-weight:900;margin:20px}.center{text-align:center}
+.choice{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice button{padding:18px;border-radius:14px;background:#1b2741;color:#fff}
+.toast{position:fixed;bottom:20px;right:20px;background:#151e32;border:1px solid #3a4664;padding:13px 16px;border-radius:14px;display:none;z-index:100;box-shadow:var(--shadow)}.toast.show{display:block}
+footer{text-align:center;color:#737e99;padding:35px 0}
+@media(max-width:600px){.app{padding:9px}.hero{padding:22px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:13px}.top{align-items:flex-start}.logo{font-size:19px}.userMini{font-size:12px}th,td{font-size:13px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="top">
+    <div class="logo">🎮 GameZone <span>PRO</span></div>
+    <div class="userMini"><span id="miniAvatar" class="avatar">🎮</span><b id="miniName">محمد</b><span class="coins">🪙 <span id="miniCoins">1200</span></span></div>
+  </div>
+  <nav id="nav">
+    <button class="active" data-page="home">الرئيسية</button>
+    <button data-page="games">🎮 الألعاب</button>
+    <button data-page="decor">✨ الزخرفة</button>
+    <button data-page="shop">🛒 المتجر</button>
+    <button data-page="leaders">🏆 المتصدرين</button>
+    <button data-page="profile">👤 البروفايل</button>
+    <button data-page="admin">👑 الأدمن</button>
+  </nav>
+</header>
+
+<main>
+<section id="home" class="page active">
+  <div class="hero">
+    <h1>GameZone PRO 🔥</h1>
+    <p>منصة ألعاب وتحديات وزخرفة ومتجر صغير في ملف HTML واحد. كل بياناتك هنا محفوظة على جهازك.</p>
+    <button class="btn" onclick="showPage('games')">ابدأ اللعب 🎮</button>
+    <button class="btn alt" onclick="showPage('decor')">زخرف اسمك ✨</button>
+  </div>
+  <div class="grid">
+    <div class="card"><div class="muted">المستوى</div><div class="stat" id="homeLevel">3</div></div>
+    <div class="card"><div class="muted">الخبرة</div><div class="stat" id="homeXP">340</div></div>
+    <div class="card"><div class="muted">العملات</div><div class="stat" id="homeCoins">1200</div></div>
+    <div class="card"><div class="muted">الألعاب</div><div class="stat" id="homeGames">17</div></div>
+  </div>
+  <div class="sectionTitle"><h2>⭐ مميزات الموقع</h2></div>
+  <div class="grid">
+    <div class="card">🎮 <h3>ألعاب صغيرة</h3><p class="muted">12 لعبة مختلفة تعمل داخل الصفحة.</p></div>
+    <div class="card">✨ <h3>زخرفة</h3><p class="muted">أكثر من 50 ستايل مع نسخ ومفضلة.</p></div>
+    <div class="card">🛒 <h3>متجر</h3><p class="muted">اشترِ عناصر باستخدام العملات.</p></div>
+    <div class="card">🏆 <h3>متصدرين</h3><p class="muted">رتّب اللاعبين حسب الخبرة والعملات.</p></div>
+  </div>
+</section>
+
+<section id="games" class="page">
+  <div class="sectionTitle"><h2>🎮 مركز الألعاب</h2><span class="tag" id="gameCount">12 لعبة</span></div>
+  <input class="search" id="gameSearch" placeholder="ابحث عن لعبة...">
+  <div id="gamesGrid" class="grid"></div>
+  <div id="gamePanel" class="gamePanel" style="display:none"></div>
+</section>
+
+<section id="decor" class="page">
+  <div class="sectionTitle"><h2>✨ زخرفة الأسماء</h2></div>
+  <div class="grid">
+    <input class="search" id="decorSearch" placeholder="ابحث في الستايلات...">
+    <input class="search" id="decorName" placeholder="اكتب الاسم هنا" value="محمد">
+  </div>
+  <div style="margin-top:10px">
+    <button class="btn" onclick="randomDecor()">🎲 عشوائي</button>
+    <button class="btn alt" onclick="copyText(currentDecor)">📋 نسخ النتيجة</button>
+  </div>
+  <div class="card" style="margin-top:15px"><div class="muted">النتيجة</div><div id="decorResult" class="decorText">『 محمد 』</div></div>
+  <div id="decorGrid" class="grid"></div>
+</section>
+
+<section id="shop" class="page">
+  <div class="sectionTitle"><h2>🛒 المتجر</h2><span>🪙 <b id="shopCoins">1200</b></span></div>
+  <div id="shopGrid" class="grid"></div>
+</section>
+
+<section id="leaders" class="page">
+  <div class="sectionTitle"><h2>🏆 المتصدرين</h2></div>
+  <div class="card" style="overflow:auto"><table><thead><tr><th>#</th><th>اللاعب</th><th>المستوى</th><th>XP</th><th>🪙</th></tr></thead><tbody id="leadersBody"></tbody></table></div>
+</section>
+
+<section id="profile" class="page">
+  <div class="card">
+    <div class="center" style="font-size:55px" id="profileAvatar">🎮</div>
+    <h2 class="center" id="profileName">محمد</h2>
+    <p class="center muted">ID: <span id="profileId">1001</span></p>
+    <div class="progress"><i id="profileProgress" style="width:34%"></i></div>
+    <p class="center">المستوى <b id="profileLevel">3</b> — <span id="profileXP">340</span> XP</p>
+    <div class="grid">
+      <div class="card"><b>🪙 العملات</b><div class="stat" id="profileCoins">1200</div></div>
+      <div class="card"><b>🎮 الألعاب</b><div class="stat" id="profileGames">17</div></div>
+      <div class="card"><b>🏆 الفوز</b><div class="stat" id="profileWins">8</div></div>
+      <div class="card"><b>❌ الخسارة</b><div class="stat" id="profileLosses">2</div></div>
+    </div>
+    <div class="center"><button class="btn" onclick="openProfileModal()">تعديل البروفايل ✏️</button></div>
+  </div>
+</section>
+
+<section id="admin" class="page">
+  <div class="hero">
+    <h2>👑 OWNER MODE</h2>
+    <p>لوحة أدمن محلية للتجربة. البيانات محفوظة في LocalStorage وليست نظام صلاحيات حقيقي للسيرفر.</p>
+  </div>
+  <div class="grid">
+    <div class="card">👥 اللاعبين<div class="stat" id="adminPlayers">0</div></div>
+    <div class="card">🪙 إجمالي العملات<div class="stat" id="adminCoins">0</div></div>
+    <div class="card">⚡ إجمالي XP<div class="stat" id="adminXP">0</div></div>
+    <div class="card">🎮 الألعاب<div class="stat">12</div></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>⚡ أدوات سريعة</h3>
+    <button class="btn" onclick="giveAllCoins()">+100 عملة للجميع</button>
+    <button class="btn" onclick="giveAllXP()">+100 XP للجميع</button>
+    <button class="btn alt" onclick="exportData()">تصدير البيانات JSON</button>
+    <button class="btn danger" onclick="resetData()">إرجاع البيانات الافتراضية</button>
+  </div>
+  <div class="card" style="margin-top:16px;overflow:auto">
+    <h3>👥 اللاعبين</h3>
+    <table><thead><tr><th>ID</th><th>الاسم</th><th>Level</th><th>Coins</th><th>XP</th><th></th></tr></thead><tbody id="adminBody"></tbody></table>
+  </div>
+</section>
+</main>
+<footer>GameZone PRO • ملف واحد فقط • كل الحقوق محفوظة للمشروع</footer>
+</div>
+
+<div id="modal" class="modal">
+ <div class="modalBox">
+  <button class="close" onclick="closeModal()">✕</button>
+  <div id="modalContent"></div>
+ </div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+"use strict";
+
+const GAMES=[
+{id:"click",name:"Turbo Click",icon:"⚡",desc:"اضغط أكبر عدد ممكن خلال 10 ثواني.",cat:"سرعة"},
+{id:"guess",name:"خمن الرقم",icon:"🔢",desc:"خمن الرقم السري من 1 إلى 20.",cat:"ذكاء"},
+{id:"reaction",name:"Reaction Pro",icon:"🎯",desc:"اختبر سرعة رد فعلك.",cat:"سرعة"},
+{id:"quiz",name:"Quiz Arena",icon:"🧠",desc:"جاوب على أسئلة معلومات عامة.",cat:"معلومات"},
+{id:"memory",name:"Memory Match",icon:"🃏",desc:"احفظ الأرقام وطابق الأزواج.",cat:"ذاكرة"},
+{id:"math",name:"Math Rush",icon:"➗",desc:"حل العمليات الحسابية بسرعة.",cat:"رياضيات"},
+{id:"word",name:"Word Mix",icon:"🔤",desc:"رتب الحروف لتكوين الكلمة.",cat:"كلمات"},
+{id:"color",name:"Color Tap",icon:"🎨",desc:"اختار اللون المطلوب.",cat:"تركيز"},
+{id:"dice",name:"Lucky Dice",icon:"🎲",desc:"ارمِ النرد وحاول تحقيق رقم كبير.",cat:"حظ"},
+{id:"coin",name:"Coin Flip",icon:"🪙",desc:"اختار وجه العملة.",cat:"حظ"},
+{id:"runner",name:"Neon Runner",icon:"🏃",desc:"تحدى العقبات بالنقر.",cat:"تحدي"},
+{id:"space",name:"Space Pilot",icon:"🚀",desc:"حافظ على سفينتك داخل المسار.",cat:"تحدي"}
+];
+
+const DECOR=[
+"『 {n} 』","꧁༺ {n} ༻꧂","★彡 {n} 彡★","𓆩 {n} 𓆪","♛ {n} ♛","『⚡{n}⚡』","乂 {n} 乂","么 {n} 么","ツ {n} ツ","亗 {n} 亗",
+"๛ {n} ๛","☠ {n} ☠","☬ {n} ☬","✦ {n} ✦","✧ {n} ✧","♕ {n} ♕","♚ {n} ♚","༒ {n} ༒","◥ {n} ◤","◣ {n} ◢",
+"【 {n} 】","〖 {n} 〗","〘 {n} 〙","《 {n} 》","〈 {n} 〉","「 {n} 」","﹝ {n} ﹞","×͜× {n}","乂⚔ {n} ⚔乂","☾ {n} ☽",
+"☀ {n} ☀","☾★ {n} ★☽","𓂀 {n} 𓂀","𓆩⚡𓆪 {n} 𓆩⚡𓆪","⚡ {n} ⚡","🔥 {n} 🔥","❄ {n} ❄","🌙 {n} 🌙","👑 {n} 👑","💎 {n} 💎",
+"🪽 {n} 🪽","🦅 {n} 🦅","⚔️ {n} ⚔️","🎮 {n} 🎮","🎧 {n} 🎧","☯ {n} ☯","☠︎ {n} ☠︎","♨ {n} ♨","✪ {n} ✪","✯ {n} ✯",
+"⟦ {n} ⟧","⫷ {n} ⫸","༺★ {n} ★༻","『メ {n} メ』"
+];
+
+const SHOP=[
+{id:"avatar1",name:"أفاتار نيون",icon:"🟣",price:150},
+{id:"avatar2",name:"أفاتار نار",icon:"🔥",price:250},
+{id:"title1",name:"لقب المحترف",icon:"🏅",price:300},
+{id:"title2",name:"لقب الأسطورة",icon:"👑",price:600},
+{id:"theme1",name:"ثيم بنفسجي",icon:"🟪",price:400},
+{id:"theme2",name:"ثيم سماوي",icon:"🟦",price:400}
+];
+
+const QUESTIONS=[
+["ما عاصمة مصر؟",["القاهرة","الإسكندرية","الجيزة","أسوان"],0],
+["كم عدد أيام الأسبوع؟",["5","6","7","8"],2],
+["ما الكوكب المعروف بالكوكب الأحمر؟",["الأرض","المريخ","الزهرة","عطارد"],1],
+["كم يساوي 5 × 6؟",["20","25","30","35"],2],
+["ما أكبر محيط؟",["الأطلسي","الهندي","الهادئ","المتجمد"],2]
+];
+
+let state=JSON.parse(localStorage.getItem("gamezone_pro_single")||"null")||{
+profile:{id:1001,name:"محمد",avatar:"🎮",coins:1200,xp:340,level:3,wins:8,losses:2,games:17,favorites:[]},
+players:[
+{id:1001,name:"محمد",avatar:"🎮",coins:1200,xp:340,level:3},
+{id:1002,name:"Gamer",avatar:"😎",coins:980,xp:290,level:3},
+{id:1003,name:"Shadow",avatar:"👤",coins:760,xp:210,level:2},
+{id:1004,name:"ProPlayer",avatar:"🔥",coins:520,xp:160,level:2}
+]};
+
+let currentDecor="", gameTimer=null, gameData={};
+
+function save(){localStorage.setItem("gamezone_pro_single",JSON.stringify(state))}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove("show"),1800)}
+function levelFromXP(xp){return Math.floor(xp/150)+1}
+function addReward(coins,xp){
+ state.profile.coins+=coins;state.profile.xp+=xp;state.profile.level=levelFromXP(state.profile.xp);
+ const me=state.players.find(p=>p.id===state.profile.id); if(me){me.coins=state.profile.coins;me.xp=state.profile.xp;me.level=state.profile.level}
+ save();renderAll();toast(`+${coins} 🪙 و +${xp} XP`);
+}
+function showPage(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+ window.scrollTo({top:0,behavior:"smooth"});
+ renderAll();
+}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+
+function renderHeader(){
+ const p=state.profile;
+ miniAvatar.textContent=p.avatar;miniName.textContent=p.name;miniCoins.textContent=p.coins;
+ homeLevel.textContent=p.level;homeXP.textContent=p.xp;homeCoins.textContent=p.coins;homeGames.textContent=p.games;
+ shopCoins.textContent=p.coins;
+ profileAvatar.textContent=p.avatar;profileName.textContent=p.name;profileId.textContent=p.id;profileLevel.textContent=p.level;profileXP.textContent=p.xp;profileCoins.textContent=p.coins;profileGames.textContent=p.games;profileWins.textContent=p.wins;profileLosses.textContent=p.losses;
+ profileProgress.style.width=(p.xp%150)/1.5+"%";
+}
+function renderGames(){
+ const q=(gameSearch.value||"").trim().toLowerCase();
+ gamesGrid.innerHTML=GAMES.filter(g=>(g.name+" "+g.desc+" "+g.cat).toLowerCase().includes(q)).map(g=>`
+ <div class="card gameCard"><div><div class="gameIcon">${g.icon}</div><span class="tag">${g.cat}</span><h3>${g.name}</h3><p class="muted">${g.desc}</p></div><button class="btn" onclick="openGame('${g.id}')">العب الآن ▶</button></div>`).join("");
+ gameCount.textContent=GAMES.length+" لعبة";
+}
+function openGame(id){
+ clearInterval(gameTimer);
+ const g=GAMES.find(x=>x.id===id); gamePanel.style.display="block";
+ if(id==="click") clickGame();
+ else if(id==="guess") guessGame();
+ else if(id==="reaction") reactionGame();
+ else if(id==="quiz") quizGame();
+ else if(id==="memory") memoryGame();
+ else if(id==="math") mathGame();
+ else if(id==="word") wordGame();
+ else if(id==="color") colorGame();
+ else if(id==="dice") diceGame();
+ else if(id==="coin") coinGame();
+ else if(id==="runner") runnerGame();
+ else if(id==="space") spaceGame();
+ gamePanel.scrollIntoView({behavior:"smooth"});
+}
+function finishGame(win=true){
+ state.profile.games++;
+ if(win)state.profile.wins++;else state.profile.losses++;
+ addReward(win?50:10,win?30:8);
+}
+function clickGame(){
+ let score=0,time=10;
+ gamePanel.innerHTML=`<h2>⚡ Turbo Click</h2><p>اضغط الزر أكبر عدد ممكن خلال 10 ثواني.</p><div class="bigNum" id="clickScore">0</div><div class="center"><button class="btn" id="clickBtn" style="font-size:25px;padding:25px 50px">اضغط! 👆</button><h3>الوقت: <span id="clickTime">10</span></h3></div>`;
+ clickBtn.onclick=()=>{if(time>0){score++;clickScore.textContent=score}};
+ gameTimer=setInterval(()=>{time--;clickTime.textContent=time;if(time<=0){clearInterval(gameTimer);clickBtn.disabled=true;finishGame(score>=20);toast(`نتيجتك ${score} ضغطة`) }},1000);
+}
+function guessGame(){
+ const secret=Math.floor(Math.random()*20)+1;
+ gamePanel.innerHTML=`<h2>🔢 خمن الرقم</h2><p>عندك 5 محاولات، الرقم من 1 إلى 20.</p><input class="search" id="guessInput" type="number" min="1" max="20" placeholder="اكتب رقم"><button class="btn" onclick="guessTry()">تخمين</button><p id="guessMsg"></p>`;
+ gameData={secret,tries:5};
+}
+function guessTry(){
+ const n=Number(guessInput.value); if(!n)return;
+ gameData.tries--;let m="";
+ if(n===gameData.secret){m="🎉 صح!";finishGame(true)}
+ else if(gameData.tries<=0){m=`انتهت المحاولات. الرقم كان ${gameData.secret}`;finishGame(false)}
+ else m=n>gameData.secret?"⬇️ الرقم أصغر":"⬆️ الرقم أكبر";
+ guessMsg.textContent=m;
+}
+function reactionGame(){
+ gamePanel.innerHTML=`<h2>🎯 Reaction Pro</h2><p>اضغط "ابدأ"، وبعد ما يتحول الزر اضغط بسرعة.</p><div class="center"><button class="btn" id="reactBtn" onclick="startReaction()">ابدأ</button><h2 id="reactMsg"></h2></div>`;
+}
+function startReaction(){
+ reactBtn.disabled=true;reactBtn.textContent="استنى...";
+ const delay=1000+Math.random()*3500;
+ setTimeout(()=>{const start=performance.now();reactBtn.disabled=false;reactBtn.textContent="اضغط الآن!";reactBtn.onclick=()=>{const ms=Math.round(performance.now()-start);reactMsg.textContent=ms+" ms";finishGame(ms<600);reactBtn.onclick=()=>startReaction()}},delay);
+}
+function quizGame(){
+ gameData={i:0,score:0};showQuizQuestion();
+}
+function showQuizQuestion(){
+ if(gameData.i>=QUESTIONS.length){gamePanel.innerHTML=`<div class="center"><h2>🎉 خلصت!</h2><div class="bigNum">${gameData.score}/${QUESTIONS.length}</div></div>`;finishGame(gameData.score>=3);return}
+ const q=QUESTIONS[gameData.i];
+ gamePanel.innerHTML=`<h2>🧠 سؤال ${gameData.i+1}/${QUESTIONS.length}</h2><h3>${q[0]}</h3><div class="choice">${q[1].map((x,i)=>`<button onclick="quizAnswer(${i})">${x}</button>`).join("")}</div>`;
+}
+function quizAnswer(i){if(i===QUESTIONS[gameData.i][2])gameData.score++;gameData.i++;showQuizQuestion()}
+function memoryGame(){
+ const nums=[1,2,3,4].sort(()=>Math.random()-.5),shown=nums.join(" ");
+ gamePanel.innerHTML=`<h2>🃏 Memory Match</h2><p>احفظ الأرقام دي لمدة 3 ثواني:</p><div class="bigNum">${shown}</div><button class="btn" onclick="memoryStart()">أنا حفظت</button>`;
+ gameData={nums};
+}
+function memoryStart(){
+ gamePanel.innerHTML=`<h2>🃏 Memory Match</h2><p>اكتب الأرقام بالترتيب مفصولة بمسافة:</p><input class="search" id="memoryInput" placeholder="مثال: 1 2 3 4"><button class="btn" onclick="memoryCheck()">تحقق</button>`;
+}
+function memoryCheck(){const a=memoryInput.value.trim().split(/\s+/).map(Number);const ok=a.join()==gameData.nums.join();finishGame(ok);toast(ok?"ذاكرة ممتازة!":"مش نفس الترتيب")}
+function mathGame(){
+ const a=Math.floor(Math.random()*20)+5,b=Math.floor(Math.random()*15)+2,op=Math.random()<.5?"+":"*";const ans=op==="+"?a+b:a*b;
+ gameData.ans=ans;gamePanel.innerHTML=`<h2>➗ Math Rush</h2><div class="bigNum">${a} ${op} ${b} = ؟</div><input class="search" id="mathInput" type="number" placeholder="الإجابة"><button class="btn" onclick="mathCheck()">تحقق</button>`;
+}
+function mathCheck(){const ok=Number(mathInput.value)===gameData.ans;finishGame(ok);toast(ok?"إجابة صحيحة!":"إجابة غلط")}
+function wordGame(){
+ const words=["GAME","PRO","NINJA","ROCKET","PLAYER"];const w=words[Math.floor(Math.random()*words.length)];gameData.word=w;
+ const mix=w.split("").sort(()=>Math.random()-.5).join("");
+ gamePanel.innerHTML=`<h2>🔤 Word Mix</h2><div class="bigNum">${mix}</div><input class="search" id="wordInput" placeholder="رتب الحروف"><button class="btn" onclick="wordCheck()">تحقق</button>`;
+}
+function wordCheck(){const ok=wordInput.value.trim().toUpperCase()===gameData.word;finishGame(ok);toast(ok?"صح!":"غلط")}
+function colorGame(){
+ const colors=["أحمر","أزرق","أخضر","أصفر"],target=colors[Math.floor(Math.random()*4)];gameData.target=target;
+ gamePanel.innerHTML=`<h2>🎨 Color Tap</h2><p>اختار: <b>${target}</b></p><div class="choice">${colors.map(c=>`<button onclick="colorCheck('${c}')">${c}</button>`).join("")}</div>`;
+}
+function colorCheck(c){const ok=c===gameData.target;finishGame(ok);colorGame()}
+function diceGame(){
+ const n=Math.floor(Math.random()*6)+1;gamePanel.innerHTML=`<h2>🎲 Lucky Dice</h2><div class="bigNum">${n}</div><p class="center">${n>=4?"🎉 حظ حلو!":"😅 جرب تاني"}</p><div class="center"><button class="btn" onclick="diceGame()">ارمِ تاني</button></div>`;
+ if(n>=4)finishGame(true);
+}
+function coinGame(){
+ gamePanel.innerHTML=`<h2>🪙 Coin Flip</h2><p>اختار توقعك:</p><div class="choice"><button onclick="coinFlip('وجه')">🙂 وجه</button><button onclick="coinFlip('كتابة')">✍️ كتابة</button></div><h2 class="center" id="coinResult"></h2>`;
+}
+function coinFlip(choice){const result=Math.random()<.5?"وجه":"كتابة";coinResult.textContent="النتيجة: "+result;finishGame(choice===result)}
+function runnerGame(){
+ let score=0,time=10;gamePanel.innerHTML=`<h2>🏃 Neon Runner</h2><p>اضغط للقفز وتجنب العقبات الافتراضية. كل ضغطة صحيحة تزود النقاط.</p><div class="bigNum" id="runScore">0</div><div class="center"><button class="btn" id="runBtn">قفز 🦘</button><h3>الوقت: <span id="runTime">10</span></h3></div>`;
+ runBtn.onclick=()=>{score++;runScore.textContent=score};gameTimer=setInterval(()=>{time--;runTime.textContent=time;if(time<=0){clearInterval(gameTimer);runBtn.disabled=true;finishGame(score>=12)}},1000);
+}
+function spaceGame(){
+ let score=0,time=10;gamePanel.innerHTML=`<h2>🚀 Space Pilot</h2><p>حرك السفينة بالنقر على الأزرار وحافظ على النقاط.</p><div class="bigNum">🚀</div><div class="choice"><button onclick="spaceMove(1)">⬅️</button><button onclick="spaceMove(2)">➡️</button></div><h3 class="center">النقاط: <span id="spaceScore">0</span> | الوقت: <span id="spaceTime">10</span></h3>`;
+ gameData.score=0;gameTimer=setInterval(()=>{time--;spaceTime.textContent=time;if(time<=0){clearInterval(gameTimer);finishGame(gameData.score>=8)}},1000);
+}
+function spaceMove(){gameData.score++;spaceScore.textContent=gameData.score}
+
+function renderDecor(){
+ const q=(decorSearch.value||"").toLowerCase();const n=decorName.value||"محمد";
+ decorGrid.innerHTML=DECOR.map((s,i)=>({s,i,out:s.replaceAll("{n}",n)})).filter(x=>x.out.toLowerCase().includes(q)||x.s.toLowerCase().includes(q)).map(x=>`
+ <div class="card"><span class="tag">ستايل ${x.i+1}</span><div class="decorText">${x.out}</div><div class="itemActions"><button class="btn" onclick="useDecor(${x.i})">استخدم</button><button class="btn alt" onclick="copyText(${JSON.stringify(x.out)})">نسخ</button><button class="btn alt" onclick="favDecor(${x.i})">⭐</button></div></div>`).join("");
+}
+function useDecor(i){currentDecor=DECOR[i].replaceAll("{n}",decorName.value||"محمد");decorResult.textContent=currentDecor;toast("تم تطبيق الزخرفة")}
+async function copyText(t){currentDecor=t;if(navigator.clipboard){try{await navigator.clipboard.writeText(t);toast("تم النسخ 📋");return}catch(e){}}const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();toast("تم النسخ 📋")}
+function randomDecor(){const i=Math.floor(Math.random()*DECOR.length);useDecor(i)}
+function favDecor(i){if(!state.profile.favorites)state.profile.favorites=[];state.profile.favorites.push(DECOR[i]);save();toast("اتضافت للمفضلة ⭐")}
+
+function renderShop(){
+ shopGrid.innerHTML=SHOP.map(x=>`<div class="card"><div class="gameIcon">${x.icon}</div><h3>${x.name}</h3><p class="muted">عنصر تجميلي</p><b>🪙 ${x.price}</b><br><button class="btn" onclick="buyItem('${x.id}')">شراء</button></div>`).join("");
+}
+function buyItem(id){
+ const x=SHOP.find(a=>a.id===id);if(state.profile.coins<x.price){toast("العملات مش كفاية ❌");return}
+ state.profile.coins-=x.price;save();renderAll();toast("تم الشراء بنجاح ✅")
+}
+
+function renderLeaders(){
+ const arr=[...state.players].sort((a,b)=>(b.xp+b.coins/10)-(a.xp+a.coins/10));
+ leadersBody.innerHTML=arr.map((p,i)=>`<tr><td>${i+1}</td><td>${p.avatar} ${p.name}</td><td>${p.level}</td><td>${p.xp}</td><td>${p.coins}</td></tr>`).join("");
+}
+function renderAdmin(){
+ adminPlayers.textContent=state.players.length;adminCoins.textContent=state.players.reduce((a,p)=>a+p.coins,0);adminXP.textContent=state.players.reduce((a,p)=>a+p.xp,0);
+ adminBody.innerHTML=state.players.map(p=>`<tr><td>${p.id}</td><td>${p.avatar} ${p.name}</td><td>${p.level}</td><td>${p.coins}</td><td>${p.xp}</td><td>${p.id===state.profile.id?"":"<button class='btn danger' onclick='deletePlayer("+p.id+")'>حذف</button>"}</td></tr>`).join("");
+}
+function deletePlayer(id){state.players=state.players.filter(p=>p.id!==id);save();renderAll();toast("تم حذف اللاعب")}
+function giveAllCoins(){state.players.forEach(p=>p.coins+=100);state.profile.coins+=100;save();renderAll();toast("تمت إضافة 100 عملة للجميع")}
+function giveAllXP(){state.players.forEach(p=>{p.xp+=100;p.level=levelFromXP(p.xp)});state.profile.xp+=100;state.profile.level=levelFromXP(state.profile.xp);save();renderAll();toast("تمت إضافة 100 XP للجميع")}
+function exportData(){
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="gamezone-data.json";a.click();URL.revokeObjectURL(url);toast("تم تصدير البيانات")
+}
+function resetData(){if(!confirm("متأكد ترجع البيانات الافتراضية؟"))return;localStorage.removeItem("gamezone_pro_single");location.reload()}
+
+function openProfileModal(){
+ modalContent.innerHTML=`<h2>✏️ تعديل البروفايل</h2><label>الاسم</label><input class="search" id="editName" value="${state.profile.name}"><br><br><label>الإيموجي</label><input class="search" id="editAvatar" value="${state.profile.avatar}"><br><br><button class="btn" onclick="saveProfile()">حفظ</button>`;
+ modal.classList.add("show");
+}
+function saveProfile(){
+ const name=editName.value.trim()||"محمد",avatar=editAvatar.value.trim()||"🎮";state.profile.name=name;state.profile.avatar=avatar;
+ const me=state.players.find(p=>p.id===state.profile.id);if(me){me.name=name;me.avatar=avatar}
+ save();closeModal();renderAll();toast("تم حفظ البروفايل")
+}
+function closeModal(){modal.classList.remove("show")}
+
+function renderAll(){renderHeader();renderGames();renderDecor();renderShop();renderLeaders();renderAdmin()}
+gameSearch.oninput=renderGames;decorSearch.oninput=renderDecor;decorName.oninput=renderDecor;
+renderAll();
+</script>
+</body>
+</html>
